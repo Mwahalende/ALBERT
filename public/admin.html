@@ -5,26 +5,30 @@
   <style>
     body {
       font-family: sans-serif;
-      background: #fff;
+      background: #f2f2f2;
       padding: 20px;
       margin: 0;
     }
     h2 {
       color: #333;
       margin-bottom: 20px;
+      text-align: center;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 16px;
+      background-color: white;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
     }
     th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
+      padding: 12px;
+      border: 1px solid #ddd;
       text-align: left;
     }
     th {
-      background-color: #f2f2f2;
+      background-color: #007BFF;
+      color: white;
     }
     button {
       margin: 2px;
@@ -34,13 +38,11 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    button:hover {
-      opacity: 0.9;
-    }
-    button:nth-child(1) { background-color: #007BFF; color: #fff; } /* Update */
-    button:nth-child(2) { background-color: #dc3545; color: #fff; } /* Delete */
-    button:nth-child(3) { background-color: #ffc107; color: #000; } /* Resend OTP */
-    button:nth-child(4) { background-color: #6c757d; color: #fff; } /* Close Door */
+    .update { background-color: #28a745; color: white; }
+    .delete { background-color: #dc3545; color: white; }
+    .resend { background-color: #ffc107; color: black; }
+    .close { background-color: #6c757d; color: white; }
+    .open { background-color: #17a2b8; color: white; }
   </style>
 </head>
 <body>
@@ -74,10 +76,11 @@
                 <td>${g.roomId}</td>
                 <td>${g.otp}</td>
                 <td>
-                  <button onclick="updateGuest('${g._id}')">Update</button>
-                  <button onclick="deleteGuest('${g._id}')">Delete</button>
-                  <button onclick="resendOTP('${g._id}')">Resend OTP</button>
-                  <button onclick="closeDoor('${g._id}')">Close Door</button>
+                  <button class="update" onclick="updateGuest('${g._id}')">Update</button>
+                  <button class="delete" onclick="deleteGuest('${g._id}')">Delete</button>
+                  <button class="resend" onclick="resendOTP('${g._id}')">Resend OTP</button>
+                  <button class="open" onclick="openDoor('${g._id}')">Open Door</button>
+                  <button class="close" onclick="closeDoor('${g._id}')">Close Door</button>
                 </td>
               </tr>`;
           });
@@ -102,7 +105,16 @@
     function resendOTP(id) {
       fetch(`/admin/resend/${id}`, { method: 'POST' })
         .then(res => res.text())
-        .then(alert);
+        .then(alert)
+        .then(loadGuests);
+    }
+
+    function openDoor(id) {
+      fetch(`/esp32/send/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'open' })
+      }).then(res => res.text()).then(alert);
     }
 
     function closeDoor(id) {

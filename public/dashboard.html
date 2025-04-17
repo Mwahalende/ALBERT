@@ -9,85 +9,102 @@
       padding: 20px;
       margin: 0;
     }
-    h2 {
-      color: #333;
+    .main {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border: 1px solid blue;
+      border-radius: 8px;
+      box-shadow: 2px 2px 8px gray;
     }
-    #info {
+    #info, #otp-display {
       margin-bottom: 20px;
       font-size: 18px;
     }
-    button {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      margin: 5px 10px 10px 0;
-      cursor: pointer;
-    }
-    .open-btn {
-      background-color: green;
-      color: white;
-    }
-    .close-btn {
-      background-color: red;
-      color: white;
-    }
-    input {
+    button, input {
       padding: 10px;
       font-size: 16px;
-      border: 1px solid #aaa;
+      margin: 10px 10px 0 0;
       border-radius: 6px;
-      margin-right: 10px;
-      margin-top: 10px;
+      border: none;
     }
-    .main{
-    height: auto;
-    padding: 20px;
-    width: 600px;
-    margin: auto;
-    border: 0.52px solid blue;
-    border-radius: 5px;
-    background-color: white;
-    box-shadow: 2px 3px 3px grey;
-    }
+    .connect-btn { background-color: #007BFF; color: white; }
+    .open-btn { background-color: green; color: white; }
+    .close-btn { background-color: red; color: white; }
   </style>
 </head>
 <body>
-    <div class="main">
-  <h2>Welcome to your Room</h2>
-  <p id="info"></p>
-  <button class="open-btn" onclick="openDoor()">Open Door</button>
-  <button class="close-btn" onclick="closeDoor()">Close Door</button>
-  <br><br>
-  <button onclick="connectBluetooth()">Connect Bluetooth</button>
-  <br><br>
-  <input id="otp" placeholder="Enter OTP">
-  <button onclick="verifyOTP()">Verify OTP</button>
-</div>
+  <div class="main">
+    <h2>Welcome to Your Room</h2>
+    <p id="info"></p>
+    <p id="otp-display" style="color: darkblue;"></p>
+    <button class="connect-btn" onclick="connectToESP32()">Connect to Door Bluetooth</button>
+
+    <div id="otp-section" style="display:none;">
+      <input id="otp" placeholder="Enter OTP">
+      <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+
+    <div id="door-controls" style="display:none;">
+      <button class="open-btn" onclick="sendCommand('open')">Open Door</button>
+      <button class="close-btn" onclick="sendCommand('close')">Close Door</button>
+    </div>
+  </div>
+
   <script>
     const guest = JSON.parse(localStorage.getItem('guest'));
-    document.getElementById('info').innerText = `Room ID: ${guest.roomId}, OTP: ${guest.otp}`;
+    document.getElementById('info').innerText = `Room ID: ${guest.roomId}`;
+    document.getElementById('otp-display').innerText = `Your OTP: ${guest.otp}`;
 
-    function openDoor() {
-      alert('Bluetooth door open request (Simulated)');
-    }
+    let espCharacteristic = null;
 
-    function closeDoor() {
-      fetch(`/esp32/send/${guest.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'close' })
-      }).then(res => res.text()).then(alert);
-    }
+    async function connectToESP32() {
+      try {
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'ESP32-Door' }],
+          optionalServices: ['4fafc201-1fb5-459e-8fcc-c5c9c331914b']
+        });
 
-    function connectBluetooth() {
-      alert('Simulated Bluetooth connection (must be near door)');
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('4fafc201-1fb5-459e-8fcc-c5c9c331914b');
+        espCharacteristic = await service.getCharacteristic('beb5483e-36e1-4688-b7f5-ea07361b26a8');
+
+        document.getElementById('otp-section').style.display = 'block';
+        alert('Connected to ESP32 Door!');
+      } catch (error) {
+        alert('Bluetooth connection failed: ' + error);
+      }
     }
 
     function verifyOTP() {
-      if (otp.value === guest.otp) alert('OTP Verified - Door Open!');
-      else alert('Invalid OTP');
+      if (otp.value === guest.otp) {
+        document.getElementById('door-controls').style.display = 'block';
+        alert('OTP Verified');
+      } else {
+        alert('Invalid OTP');
+      }
     }
+
+    function sendCommand(cmd) {
+      if (espCharacteristic) {
+        const encoder = new TextEncoder();
+        espCharacteristic.writeValue(encoder.encode(cmd));
+        alert(`Command "${cmd}" sent to ESP32`);
+      }
+    }
+
+    function fetchLatestOTP() {
+      fetch(`/esp32/otp/${guest.roomId}`)
+        .then(res => res.json())
+        .then(data => {
+          guest.otp = data.otp;
+          localStorage.setItem('guest', JSON.stringify(guest));
+          document.getElementById('otp-display').innerText = `Your OTP: ${guest.otp}`;
+        });
+    }
+
+    setInterval(fetchLatestOTP, 5000);
   </script>
 </body>
 </html>

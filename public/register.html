@@ -55,13 +55,13 @@
   <div class="container">
     <h2>Register</h2>
     <form onsubmit="register(event)">
-      <input placeholder="Full Name" id="fullname" required><br>
-      <input placeholder="Phone Number" id="phone" required><br>
-      <input placeholder="Email" id="email" required><br>
-      <input placeholder="Room ID (1-30)" id="roomId" type="number" required><br>
-      <input placeholder="Password" id="password" type="password" required><br>
-      <input placeholder="Confirm Password" id="confirmPassword" type="password" required><br>
-      <button>Register</button>
+      <input placeholder="Full Name" id="fullname" required>
+      <input placeholder="Phone Number" id="phone" required>
+      <input placeholder="Email" id="email" required>
+      <input placeholder="Room ID (1-30)" id="roomId" type="number" required>
+      <input placeholder="Password" id="password" type="password" required>
+      <input placeholder="Confirm Password" id="confirmPassword" type="password" required>
+      <button onsubmit="window.location.href='login.html'">Register</button>
     </form>
     <p id="msg"></p>
   </div>

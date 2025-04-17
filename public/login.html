@@ -4,65 +4,47 @@
   <title>Login</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-      margin: 0;
+      font-family: Arial;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f2f5;
     }
-    h1 {
-      color: #333;
-      margin-bottom: 20px;
-      text-align: center;
+    .container {
+      background: white;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      width: 350px;
     }
-    form {
-      max-width: 400px;
-      margin: auto;
-      background-color: white;
-      border: 2PX solid blue;
-      padding: 20px;
-    }
-    input {
+    h1 { text-align: center; margin-bottom: 20px; }
+    input, button {
       width: 100%;
       padding: 10px;
-      margin-bottom: 12px;
+      margin: 10px 0;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
     }
     button {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
       background-color: #007BFF;
       color: white;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
     }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #msg {
-      color: red;
-      margin-top: 10px;
-    }
-    .main{
-    width: 600px;
-    margin: auto;
-    }
+    #msg { color: red; text-align: center; }
   </style>
 </head>
 <body>
-    <div class="main">
-  
-  <form onsubmit="login(event)">
-    <h1>Login</h1><br>
-    <input placeholder="Phone or Email" id="identifier"><br>
-    <input placeholder="Password" type="password" id="password"><br>
-    <button>Login</button>
-  </form>
-  <p id="msg"></p>
-</div>
+  <div class="container">
+    <form onsubmit="login(event)">
+      <h1>Login</h1>
+      <input id="identifier" placeholder="Phone or Email" required>
+      <input id="password" placeholder="Password" type="password" required>
+      <button>Login</button>
+    </form>
+    <p id="msg"></p>
+  </div>
+
   <script>
     function login(e) {
       e.preventDefault();
@@ -77,7 +59,7 @@
       .then(res => res.json())
       .then(data => {
         localStorage.setItem('guest', JSON.stringify(data));
-        window.location = 'dashboard.html';
+        window.location.href = 'dashboard.html';
       })
       .catch(() => msg.innerText = 'Login failed');
     }

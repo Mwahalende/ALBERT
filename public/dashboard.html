@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #eef;
+      padding: 20px;
+      margin: 0;
+    }
+    h2 {
+      color: #333;
+    }
+    #info {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      margin: 5px 10px 10px 0;
+      cursor: pointer;
+    }
+    .open-btn {
+      background-color: green;
+      color: white;
+    }
+    .close-btn {
+      background-color: red;
+      color: white;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    .main{
+    height: auto;
+    padding: 20px;
+    width: 600px;
+    margin: auto;
+    border: 0.52px solid blue;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 2px 3px 3px grey;
+    }
+  </style>
+</head>
+<body>
+    <div class="main">
+  <h2>Welcome to your Room</h2>
+  <p id="info"></p>
+  <button class="open-btn" onclick="openDoor()">Open Door</button>
+  <button class="close-btn" onclick="closeDoor()">Close Door</button>
+  <br><br>
+  <button onclick="connectBluetooth()">Connect Bluetooth</button>
+  <br><br>
+  <input id="otp" placeholder="Enter OTP">
+  <button onclick="verifyOTP()">Verify OTP</button>
+</div>
+  <script>
+    const guest = JSON.parse(localStorage.getItem('guest'));
+    document.getElementById('info').innerText = `Room ID: ${guest.roomId}, OTP: ${guest.otp}`;
+
+    function openDoor() {
+      alert('Bluetooth door open request (Simulated)');
+    }
+
+    function closeDoor() {
+      fetch(`/esp32/send/${guest.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'close' })
+      }).then(res => res.text()).then(alert);
+    }
+
+    function connectBluetooth() {
+      alert('Simulated Bluetooth connection (must be near door)');
+    }
+
+    function verifyOTP() {
+      if (otp.value === guest.otp) alert('OTP Verified - Door Open!');
+      else alert('Invalid OTP');
+    }
+  </script>
+</body>
+</html>

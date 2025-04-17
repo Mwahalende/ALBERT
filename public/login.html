@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      background-color: white;
+      border: 2PX solid blue;
+      padding: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #msg {
+      color: red;
+      margin-top: 10px;
+    }
+    .main{
+    width: 600px;
+    margin: auto;
+    }
+  </style>
+</head>
+<body>
+    <div class="main">
+  
+  <form onsubmit="login(event)">
+    <h1>Login</h1><br>
+    <input placeholder="Phone or Email" id="identifier"><br>
+    <input placeholder="Password" type="password" id="password"><br>
+    <button>Login</button>
+  </form>
+  <p id="msg"></p>
+</div>
+  <script>
+    function login(e) {
+      e.preventDefault();
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: identifier.value,
+          password: password.value
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        localStorage.setItem('guest', JSON.stringify(data));
+        window.location = 'dashboard.html';
+      })
+      .catch(() => msg.innerText = 'Login failed');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #msg {
+      text-align: center;
+      margin-top: 20px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Register</h2>
+    <form onsubmit="register(event)">
+      <input placeholder="Full Name" id="fullname" required><br>
+      <input placeholder="Phone Number" id="phone" required><br>
+      <input placeholder="Email" id="email" required><br>
+      <input placeholder="Room ID (1-30)" id="roomId" type="number" required><br>
+      <input placeholder="Password" id="password" type="password" required><br>
+      <input placeholder="Confirm Password" id="confirmPassword" type="password" required><br>
+      <button>Register</button>
+    </form>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    function register(e) {
+      e.preventDefault();
+      fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullname: fullname.value,
+          phone: phone.value,
+          email: email.value,
+          password: password.value,
+          confirmPassword: confirmPassword.value,
+          roomId: roomId.value
+        })
+      }).then(res => res.text())
+        .then(msgText => {
+          document.getElementById('msg').innerText = msgText;
+        });
+    }
+  </script>
+</body>
+</html>

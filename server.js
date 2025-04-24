@@ -14,13 +14,12 @@ app.use(express.static('public'));
 app.use(cors());
 
 // MongoDB Connection
-mongoose.connect("mongodb://127.0.0.1:27017/hospitalDB");
-mongoose.connection.on("connected", () => {
-  console.log("✅ MongoDB connected successfully (local)");
-});
-mongoose.connection.on("error", (err) => {
-  console.error("❌ MongoDB connection error:", err);
-});
+// Database Connection
+mongoose
+  .connect("mongodb+srv://user1:malafiki@leodb.5mf7q.mongodb.net/?retryWrites=true&w=majority&appName=leodb", { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("Connection error:", err));
+
 const guestSchema = new mongoose.Schema({
   fullname: String,
   phone: String,
